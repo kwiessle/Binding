@@ -127,11 +127,8 @@ extension UISegmentedControl: Bindable {
 }
 
 
-public protocol InstanciableFromAny {
-    init?(_ value: Any?)
-}
 
-extension String: InstanciableFromAny {
+extension String {
     
     public init?(_ value: Any?) {
         if let value = value as? String {
@@ -142,6 +139,8 @@ extension String: InstanciableFromAny {
             self = String(value)
         } else if let value = value as? Float {
             self = String(value)
+        } else if let value = value as? Bool {
+            self = value ? "true" : "false"
         } else {
             return nil
         }
@@ -150,23 +149,3 @@ extension String: InstanciableFromAny {
 }
 
 
-extension Float: InstanciableFromAny {
-    
-    public init?(_ value: Any?) {
-        if let value = value as? Float {
-            self = value
-        } else if let value = value as? Double {
-            self = Float(value)
-        } else if let value = value as? Int {
-            self = Float(value)
-        } else if let value = value as? String, let float = Float(value) {
-            self = float
-        } else {
-            return nil
-        }
-    }
-    
-    
-    
-    
-}
