@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Extensions.swift
 //  
 //
 //  Created by Kiefer Wiessler on 20/05/2021.
@@ -127,7 +127,11 @@ extension UISegmentedControl: Bindable {
 }
 
 
-extension String {
+public protocol InstanciableFromAny {
+    init?(_ value: Any?)
+}
+
+extension String: InstanciableFromAny {
     
     public init?(_ value: Any?) {
         if let value = value as? String {
@@ -142,5 +146,27 @@ extension String {
             return nil
         }
     }
+    
+}
+
+
+extension Float: InstanciableFromAny {
+    
+    public init?(_ value: Any?) {
+        if let value = value as? Float {
+            self = value
+        } else if let value = value as? Double {
+            self = Float(value)
+        } else if let value = value as? Int {
+            self = Float(value)
+        } else if let value = value as? String, let float = Float(value) {
+            self = float
+        } else {
+            return nil
+        }
+    }
+    
+    
+    
     
 }

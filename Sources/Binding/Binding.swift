@@ -1,25 +1,33 @@
-
+//
+//  Binding.swift
+//
+//
+//  Created by Kiefer Wiessler on 20/05/2021.
+//
 
 import UIKit
-
 
 public class Binding<Model:AnyObject> {
         
     
     //MARK: - Properties
+    
     public var model: Model
     
     private var bindings: [AnyObject] = []
     
     //MARK: - Initializer
+    
     public init(_ model: Model) {
         self.model = model
     }
     
     //MARK: Utils
-    internal func bindings<Value>(for property: KeyPath<Model,Value>) -> [PropertyBinding<Model,Value>] {
-        self.bindings.compactMap { ($0 as? PropertyBinding<Model,Value>) }.filter { $0.modelProperty == property }
+    
+    func binds<Value>(for property: KeyPath<Model,Value>) -> [Bind<Model,Value>] {
+        self.bindings.compactMap { $0 as? Bind<Model,Value> }.filter { $0.modelProperty == property }
     }
+    
     
     /// Will instanciate and store a `PropertyBinding` between the informed ``property`` and ``source``
     /// - Parameters:
@@ -27,7 +35,7 @@ public class Binding<Model:AnyObject> {
     ///   - source: Basically an object that conforms to 'Bindable' protocol
     
     public final func plug<Value>(_ property: WritableKeyPath<Model,Value>, on source: Bindable) {
-        self.bindings.append(PropertyBinding(coordinator: self, source: source, property: property))
+        self.bindings.append(Bind(target: self, source: source, property: property))
     }
     
     
@@ -37,7 +45,7 @@ public class Binding<Model:AnyObject> {
     ///   - property: A  KeyPath referencing the model's property to update
     
     public final func set<Value>(_ value: Value, to property: KeyPath<Model,Value>, animated: Bool = true) {
-        self.bindings(for: property).forEach { $0.set(value, animated: animated) }
+        self.binds(for: property).forEach { $0.set(value, animated: animated) }
     }
     
     
@@ -45,8 +53,9 @@ public class Binding<Model:AnyObject> {
     /// Will search all `Bindable` associated with the informed model's `property`
     /// - Parameter property: A KeyPath referencing the model's property eventually binded with a Bindable object
     /// - Returns: An array of all associated  objects binded for a given `property`
+    
     public func getAssocitedBindables<Value>(for property: KeyPath<Model,Value>) -> [Bindable] {
-        self.bindings(for: property).map { $0.bindable }
+        self.binds(for: property).map { $0.bindable }
     }
     
   
